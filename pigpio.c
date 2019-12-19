@@ -12717,10 +12717,6 @@ int gpioHardwareClock(unsigned gpio, unsigned frequency)
 
    CHECK_INITED;
 
-   if ((gpio >> 24) == 0x5A) password = 1;
-
-   gpio &= 0xFFFFFF;
-
    if (gpio > PI_MAX_GPIO)
       SOFT_ERROR(PI_BAD_GPIO, "bad gpio (%d)", gpio);
 
@@ -12735,6 +12731,10 @@ int gpioHardwareClock(unsigned gpio, unsigned frequency)
             hw_clk_min_freq, hw_clk_max_freq, frequency);
 
    clock = (clkDef[gpio] >> 4) & 3;
+
+   if ((ClkReg[cctl[clock]] >> 24) == 0x5A) password = 1;
+
+   ClkReg[cctl[clock]] &= 0xFFFFFF;
 
    if ((clock == 1) && (!password))
       SOFT_ERROR(PI_BAD_HCLK_PASS,
